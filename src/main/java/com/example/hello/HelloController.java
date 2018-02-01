@@ -19,8 +19,10 @@ package com.example.hello;
 import io.opentracing.ActiveSpan;
 import io.opentracing.Tracer;
 import io.opentracing.tag.Tags;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * @author <a href="mailto:gytis@redhat.com">Gytis Trikleris</a>
@@ -30,21 +32,29 @@ public class HelloController {
 
     private final Tracer tracer;
 
-    public HelloController(Tracer tracer) {
+    private final RestTemplate restTemplate;
+
+    @Autowired
+    public HelloController(Tracer tracer, RestTemplate restTemplate) {
         this.tracer = tracer;
+        this.restTemplate = restTemplate;
     }
 
     @RequestMapping
     public String hello() {
-        try (ActiveSpan span = tracer.buildSpan("get-message")
+        String name;
+        try (ActiveSpan span = tracer.buildSpan("get-name")
                 .startActive()) {
             Tags.COMPONENT.set(span, "hello-controller");
-            return getMessage();
+            name  = restTemplate.getForObject("http://hello:8080/name", String.class);
         }
+
+        return String.format("Hello, %s!", name);
     }
 
-    private String getMessage() {
-        return "Hello World!";
+    @RequestMapping(path = "/name")
+    public String name() {
+        return "World";
     }
 
 }
