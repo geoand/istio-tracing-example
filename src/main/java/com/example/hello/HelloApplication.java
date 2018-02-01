@@ -24,7 +24,7 @@ public class HelloApplication {
     public Tracer tracer() {
         com.uber.jaeger.Tracer.Builder builder = new com.uber.jaeger.Tracer.Builder("spring-boot",
                 new RemoteReporter(
-                        new HttpSender("https://jaeger-query-istio-system.192.168.64.13.nip.io/api/traces"),
+                        new HttpSender("http://jaeger-collector.istio-system:14268/api/traces"),
                         10,
                         65000,
                         new Metrics(new StatsFactoryImpl(new NullStatsReporter()))),

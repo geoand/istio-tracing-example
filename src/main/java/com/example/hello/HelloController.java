@@ -39,7 +39,6 @@ public class HelloController {
         try (ActiveSpan span = tracer.buildSpan("get-message")
                 .startActive()) {
             Tags.COMPONENT.set(span, "hello-controller");
-            Tags.SAMPLING_PRIORITY.set(span, 1);
             return getMessage();
         }
     }
