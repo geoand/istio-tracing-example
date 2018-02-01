@@ -36,12 +36,12 @@ public class HelloController {
 
     @RequestMapping
     public String hello() {
-        System.out.println(tracer.activeSpan());
-        ActiveSpan span = tracer.buildSpan("get-message")
-                .startActive();
-        Tags.COMPONENT.set(span, "hello-controller");
-        Tags.SAMPLING_PRIORITY.set(span, 1);
-        return getMessage();
+        try (ActiveSpan span = tracer.buildSpan("get-message")
+                .startActive()) {
+            Tags.COMPONENT.set(span, "hello-controller");
+            Tags.SAMPLING_PRIORITY.set(span, 1);
+            return getMessage();
+        }
     }
 
     private String getMessage() {
